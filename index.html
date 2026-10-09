@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1F3A5F">
 <title>House of Wisdom - Teacher Tracker</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
 <header class="top">
@@ -30,9 +30,9 @@
   </div>
 
   <div id="app" hidden>
-    <nav class="menu" aria-label="Main menu">
+    <nav class="menu" id="menu" aria-label="Main menu">
       <a class="mbtn on" data-view="find" href="#find">🔍 FIND TEACHER</a>
-      <a class="mbtn" data-view="find" href="#find">📅 TEACHER TIMETABLE</a>
+      <a class="mbtn" data-view="find" data-alt="1" href="#find">📅 TEACHER TIMETABLE</a>
       <a class="mbtn" data-view="substitute" href="#substitute">🔁 FIND SUBSTITUTE</a>
       <span class="mbtn soon">📊 LIVE TEACHER STATUS<small>Phase 3</small></span>
       <span class="mbtn soon">🚪 ROOM SEARCH<small>Phase 3</small></span>
@@ -75,14 +75,28 @@
   </div>
 </main>
 
-<footer>Times use the school timezone (Asia/Karachi). “Location” means the scheduled location in the timetable, not GPS.</footer>
+<footer>
+<div id="build" style="font-weight:700">Build 6 (Phase 1-5)</div>Times use the school timezone (Asia/Karachi). “Location” means the scheduled location in the timetable, not GPS.</footer>
 
-<script src="js/config.js"></script>
+<script src="js/config.js?v=6"></script>
 <script src="data/bootstrap.js"></script>
-<script src="js/timetable.js"></script>
-<script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/substitute.js"></script>
-<script src="js/app.js"></script>
+<script src="js/timetable.js?v=6"></script>
+<script src="js/api.js?v=6"></script>
+<script src="js/ui.js?v=6"></script>
+<script src="js/substitute.js?v=6"></script>
+<script src="js/app.js?v=6"></script>
+<script>
+/* Self-check: shows which scripts your browser really loaded. */
+window.addEventListener('error', function (e) {
+  var b = document.getElementById('build');
+  if (b) b.textContent += ' | JS ERROR: ' + (e.message || 'unknown') + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '');
+});
+window.addEventListener('load', function () {
+  var ok = [typeof HOWTT !== 'undefined', typeof HOWAPI !== 'undefined', typeof HOWUI !== 'undefined' && !!HOWUI.dayLessons, typeof HOWSUB !== 'undefined'];
+  var names = ['timetable.js', 'api.js', 'ui.js (new)', 'substitute.js'];
+  var bad = names.filter(function (n, i) { return !ok[i]; });
+  document.getElementById('build').textContent = 'Build 6 (Phase 1-5) - ' + (bad.length ? 'PROBLEM, old or missing: ' + bad.join(', ') : 'all files up to date');
+});
+</script>
 </body>
 </html>
