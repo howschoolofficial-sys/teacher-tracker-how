@@ -25,12 +25,24 @@
   }
 
   /* ---------- views ---------- */
-  function showView() {
-    var v = location.hash === '#substitute' ? 'substitute' : 'find';
+  function showView(v) {
+    v = v || (location.hash === '#substitute' ? 'substitute' : 'find');
     $('findView').hidden = v !== 'find'; $('subView').hidden = v !== 'substitute';
     Array.prototype.forEach.call(document.querySelectorAll('.mbtn[data-view]'), function (a) {
-      a.classList.toggle('on', a.getAttribute('data-view') === v);
+      a.classList.toggle('on', a.getAttribute('data-view') === v && !(v === 'find' && a.getAttribute('data-alt') === '1'));
     });
+    return v;
+  }
+
+  /** Menu taps switch the view directly (does not depend on the address bar # change, which some phone browsers ignore). */
+  function onMenuTap(e) {
+    var a = e.target.closest ? e.target.closest('a[data-view]') : null;
+    if (!a) return;
+    e.preventDefault();
+    var v = showView(a.getAttribute('data-view'));
+    try { history.replaceState(null, '', '#' + v); } catch (x) {}
+    var target = $(v === 'substitute' ? 'subView' : 'findView');
+    if (target && target.scrollIntoView) target.scrollIntoView({ block: 'start' });
   }
 
   /* ---------- clock ---------- */
@@ -234,7 +246,8 @@
       } else if (t.hasAttribute('data-share')) window.open('https://wa.me/?text=' + encodeURIComponent(shareText()), '_blank');
     });
     $('retry').addEventListener('click', start);
-    window.addEventListener('hashchange', showView);
+    window.addEventListener('hashchange', function () { showView(); });
+    $('menu').addEventListener('click', onMenuTap);
 
     // Test helper: add ?day=Monday&time=10:35 to preview a moment in time.
     var q = new URLSearchParams(location.search);
